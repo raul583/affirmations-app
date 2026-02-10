@@ -62,16 +62,12 @@ export const PlayerLogic: React.FC = () => {
         
         // Find Voice Profile
         const baseProfile = VOICE_PROFILES.find(p => p.id === player.ttsProfileId) || VOICE_PROFILES[0];
-        
-        // Apply Speed Adjustment
-        const speed = Math.max(0.5, Math.min(2.0, player.ttsRate || 1.0));
-        
-        const activeProfile = { 
-          ...baseProfile, 
+        const speed = Math.max(0.6, Math.min(1.6, player.ttsRate || 1));
+
+        const activeProfile = {
+          ...baseProfile,
           volume: player.ttsVolume,
-          // We adjust the rate passed to TTS provider.
-          // For WebSpeech, rate is 0.1-10. For AudioContext (Gemini), we handle it in provider via playbackRate.
-          rate: baseProfile.rate * speed
+          rate: baseProfile.rate * speed,
         };
 
         setPlayerStatus('playing'); // Ensure status

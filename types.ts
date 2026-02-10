@@ -35,7 +35,6 @@ export type VoiceId =
   | "energica"
   | "kore"
   | "charon"
-  | "fenrir"
   | "atlas"
   | "orion"
   | "zephyr"
@@ -77,8 +76,9 @@ export interface PlayerState {
   ambientTrackId: AmbientId;
   ambientVolume: number;
   ttsVolume: number;
-  ttsRate: number; // Playback speed multiplier (0.5x - 2.0x)
+  ttsRate: number; // Playback speed multiplier (0.6x - 1.6x)
   progressMs: number;
+  geminiVoiceName?: string;
 }
 
 export interface AppData {

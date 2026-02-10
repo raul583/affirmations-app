@@ -9,21 +9,20 @@ interface ITTSProvider {
 
 // Map Core VoiceId to Gemini Prebuilt Voice Names
 const GEMINI_VOICE_MAP: Record<VoiceId, string> = {
-  'system': 'Zephyr',
-  'epica': 'Kore',
-  'calma': 'Fenrir',
-  'energica': 'Puck',
-  'kore': 'Kore',
-  'charon': 'Charon',
-  'fenrir': 'Fenrir',
-  'atlas': 'Atlas',
-  'orion': 'Orion',
-  'zephyr': 'Zephyr',
-  'puck': 'Puck',
-  'shonen': 'Puck',
-  'sensei': 'Fenrir',
-  'villain': 'Charon',
-  'monk': 'Zephyr',
+  system: 'Zephyr',
+  epica: 'Kore',
+  calma: 'Fenrir',
+  energica: 'Puck',
+  kore: 'Kore',
+  charon: 'Charon',
+  atlas: 'Atlas',
+  orion: 'Orion',
+  zephyr: 'Zephyr',
+  puck: 'Puck',
+  shonen: 'Puck',
+  sensei: 'Fenrir',
+  villain: 'Charon',
+  monk: 'Zephyr',
 };
 
 class HybridTTS implements ITTSProvider {
@@ -59,12 +58,11 @@ class HybridTTS implements ITTSProvider {
   private speakWebSpeech(text: string, profile: VoiceProfile): Promise<void> {
     return new Promise((resolve, reject) => {
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = profile.rate; // This comes pre-calculated with speed multiplier
+      utterance.rate = profile.rate; 
       utterance.pitch = profile.pitch;
       utterance.volume = profile.volume;
 
       const voices = this.getVoices();
-      // Try to find a voice that matches logic or generic English
       
       utterance.onend = () => resolve();
       utterance.onerror = (e) => {
@@ -112,8 +110,7 @@ class HybridTTS implements ITTSProvider {
         source.buffer = audioBuffer;
         
         // Apply playback rate for speed control
-        // Ensure rate is within reasonable bounds (0.5 to 2.0 typically safe for audio context)
-        source.playbackRate.value = Math.max(0.5, Math.min(2.0, profile.rate));
+        source.playbackRate.value = Math.max(0.6, Math.min(1.6, profile.rate));
         
         // Simple volume control
         const gainNode = ctx.createGain();
@@ -148,17 +145,28 @@ class HybridTTS implements ITTSProvider {
     const voices = this.getVoices();
     const hasVoices = voices.length > 0;
 
-    // Force Gemini for specific high quality profiles if desired, but for now simple fallback
-    if (hasVoices) {
-      try {
-        await this.speakWebSpeech(text, profile);
-      } catch (e) {
-        console.warn("WebSpeech failed, falling back to Gemini", e);
-        await this.speakGemini(text, profile);
-      }
+    // We can force Gemini for specific profiles if we want, but keeping hybrid logic:
+    // If the profile maps to a specific Gemini voice name explicitly, prefer Gemini? 
+    // For now, let's stick to the simple fallback unless it's a "system" voice.
+    // Actually, to get the high quality voices "Kore", "Charon" etc we MUST use Gemini if selected.
+    // The previous implementation fell back only on error. 
+    // Let's bias towards Gemini if API Key is present and profile is not 'system'.
+    
+    const shouldUseGemini = process.env.API_KEY && profile.id !== 'system';
+
+    if (shouldUseGemini) {
+        try {
+            await this.speakGemini(text, profile);
+        } catch(e) {
+            console.warn("Gemini failed, fallback to WebSpeech", e);
+            if (hasVoices) await this.speakWebSpeech(text, profile);
+        }
     } else {
-      // Fallback directly
-      await this.speakGemini(text, profile);
+        if (hasVoices) {
+            await this.speakWebSpeech(text, profile);
+        } else {
+            await this.speakGemini(text, profile);
+        }
     }
   }
 

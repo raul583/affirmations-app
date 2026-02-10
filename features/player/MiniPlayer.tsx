@@ -3,7 +3,7 @@ import { useStore } from '../../store/useStore';
 import { Play, Pause, SkipForward, SkipBack, Maximize2, Square } from 'lucide-react';
 
 export const MiniPlayer: React.FC = () => {
-  const { player, routines, affirmations, setPlayerStatus, nextTrack, prevTrack, setPlayerMode, resetPlayer, setCurrentIndex } = useStore();
+  const { player, routines, affirmations, setPlayerStatus, nextTrack, prevTrack, setPlayerMode, resetPlayer, setCurrentIndex, updatePlayerConfig } = useStore();
 
   if (player.status === 'idle' && !player.currentRoutineId) return null;
 
@@ -53,6 +53,18 @@ export const MiniPlayer: React.FC = () => {
       </div>
 
       <div className="flex items-center justify-end gap-4 w-1/3">
+        {/* Speed Control Compact */}
+        <div className="hidden md:flex flex-col items-center w-16 group">
+          <input 
+              type="range" 
+              min="0.6" max="1.6" step="0.1" 
+              value={player.ttsRate || 1.0} 
+              onChange={e => updatePlayerConfig({ ttsRate: parseFloat(e.target.value) })}
+              className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer opacity-50 group-hover:opacity-100 transition-opacity"
+          />
+          <span className="text-[10px] text-core-muted">{player.ttsRate || 1.0}x</span>
+        </div>
+
         <button onClick={() => { resetPlayer(); setPlayerStatus('idle'); }} className="text-core-muted hover:text-red-500 hidden md:block">
             <Square size={18} />
         </button>

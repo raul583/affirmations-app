@@ -43,25 +43,21 @@ export const INITIAL_ROUTINES: Routine[] = [
 export const VOICE_PROFILES: VoiceProfile[] = [
   { id: 'system', label: 'System Default', rate: 1, pitch: 1, volume: 1 },
 
-  // Abstract Archetypes
   { id: 'epica', label: 'Épica (Cinematic)', rate: 0.92, pitch: 0.85, volume: 1, geminiVoiceName: 'Kore' },
   { id: 'calma', label: 'Calma (Soft)', rate: 0.95, pitch: 1.05, volume: 0.95, geminiVoiceName: 'Fenrir' },
   { id: 'energica', label: 'Enérgica (Fast)', rate: 1.15, pitch: 1.05, volume: 1, geminiVoiceName: 'Puck' },
 
-  // Specific Gemini Voices
   { id: 'kore', label: 'Kore — Deep Authority', rate: 1.0, pitch: 0.85, volume: 1, geminiVoiceName: 'Kore' },
   { id: 'charon', label: 'Charon — Dark Gravel', rate: 0.97, pitch: 0.75, volume: 1, geminiVoiceName: 'Charon' },
-  { id: 'fenrir', label: 'Fenrir — Deep & Rough', rate: 0.95, pitch: 0.8, volume: 1, geminiVoiceName: 'Fenrir' },
   { id: 'atlas', label: 'Atlas — Grounded Bass', rate: 0.98, pitch: 0.8, volume: 1, geminiVoiceName: 'Atlas' },
   { id: 'orion', label: 'Orion — Narrator', rate: 0.96, pitch: 0.9, volume: 1, geminiVoiceName: 'Orion' },
   { id: 'zephyr', label: 'Zephyr — Clean Default', rate: 1.0, pitch: 1.0, volume: 1, geminiVoiceName: 'Zephyr' },
   { id: 'puck', label: 'Puck — Upbeat', rate: 1.08, pitch: 1.08, volume: 1, geminiVoiceName: 'Puck' },
 
-  // Thematic
-  { id: 'shonen', label: 'Shōnen Hero (Anime Vibe)', rate: 1.18, pitch: 1.12, volume: 1, geminiVoiceName: 'Puck' },
-  { id: 'sensei', label: 'Sensei Mentor (Calm)', rate: 0.92, pitch: 0.95, volume: 0.95, geminiVoiceName: 'Fenrir' },
-  { id: 'villain', label: 'Villain (Low & Slow)', rate: 0.88, pitch: 0.7, volume: 1, geminiVoiceName: 'Charon' },
-  { id: 'monk', label: 'Monk (Ultra Calm)', rate: 0.85, pitch: 0.9, volume: 0.9, geminiVoiceName: 'Zephyr' },
+  { id: 'shonen', label: 'Shōnen Hero (anime vibe)', rate: 1.18, pitch: 1.12, volume: 1, geminiVoiceName: 'Puck' },
+  { id: 'sensei', label: 'Sensei Mentor (calm)', rate: 0.92, pitch: 0.95, volume: 0.95, geminiVoiceName: 'Fenrir' },
+  { id: 'villain', label: 'Villain (low & slow)', rate: 0.88, pitch: 0.7, volume: 1, geminiVoiceName: 'Charon' },
+  { id: 'monk', label: 'Monk (ultra calm)', rate: 0.85, pitch: 0.9, volume: 0.9, geminiVoiceName: 'Zephyr' },
 ];
 
 export const AMBIENT_TRACKS: AmbientTrack[] = [

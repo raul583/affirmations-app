@@ -38,12 +38,12 @@ interface StoreState {
   // Player Actions
   playRoutine: (routineId: string, startIndex?: number) => void;
   playAtIndex: (index: number) => void;
-  
+
   // Player State
   player: PlayerState;
   setPlayerStatus: (status: PlayerState['status']) => void;
   setPlayerMode: (mode: PlayerState['mode']) => void;
-  setPlayerRoutine: (routineId: string) => void; // Deprecated in favor of playRoutine but kept for compatibility
+  setPlayerRoutine: (routineId: string) => void; // Kept for backward compat if needed, but playRoutine is preferred
   nextTrack: () => void;
   prevTrack: () => void;
   resetPlayer: () => void;
@@ -116,7 +116,8 @@ export const useStore = create<StoreState>()(
         ambientTrackId: 'none',
         ambientVolume: 0.5,
         ttsVolume: 1.0,
-        progressMs: 0
+        progressMs: 0,
+        geminiVoiceName: undefined,
       },
 
       playRoutine: (routineId, startIndex = 0) => set(state => ({
@@ -126,7 +127,7 @@ export const useStore = create<StoreState>()(
           currentIndex: startIndex,
           currentRepeatCount: 0,
           isWaitingSilence: false,
-          status: 'playing' // Ensure it starts playing
+          status: 'playing'
         }
       })),
 
@@ -136,7 +137,7 @@ export const useStore = create<StoreState>()(
           currentIndex: Math.max(0, index),
           currentRepeatCount: 0,
           isWaitingSilence: false,
-          status: 'playing' // Ensure it starts playing
+          status: 'playing'
         }
       })),
 
@@ -175,43 +176,38 @@ export const useStore = create<StoreState>()(
         if (!routine) return;
         
         if (state.player.currentIndex < routine.items.length - 1) {
-          // Move next, preserve paused state if paused, else keep playing
-          const nextStatus = state.player.status === 'paused' ? 'paused' : 'playing';
           set(s => ({ 
-            player: { 
-              ...s.player, 
-              currentIndex: s.player.currentIndex + 1, 
-              currentRepeatCount: 0, 
-              isWaitingSilence: false,
-              status: nextStatus
-            } 
+             player: { 
+               ...s.player, 
+               currentIndex: s.player.currentIndex + 1, 
+               currentRepeatCount: 0, 
+               isWaitingSilence: false,
+               status: s.player.status === 'paused' ? 'paused' : 'playing'
+             } 
           }));
         } else {
           set(s => ({ player: { ...s.player, status: 'ended' } }));
         }
       },
-
       prevTrack: () => {
         const state = get();
         if (state.player.currentIndex > 0) {
-          const nextStatus = state.player.status === 'paused' ? 'paused' : 'playing';
           set(s => ({ 
-            player: { 
-              ...s.player, 
-              currentIndex: s.player.currentIndex - 1, 
-              currentRepeatCount: 0, 
-              isWaitingSilence: false,
-              status: nextStatus
-            } 
+             player: { 
+               ...s.player, 
+               currentIndex: s.player.currentIndex - 1, 
+               currentRepeatCount: 0, 
+               isWaitingSilence: false,
+               status: s.player.status === 'paused' ? 'paused' : 'playing'
+             } 
           }));
         } else {
-          // If at start, just restart current
-          set(s => ({ 
+           // Restart if at beginning
+           set(s => ({ 
              player: { ...s.player, currentRepeatCount: 0, isWaitingSilence: false, status: 'playing' }
-          }));
+           }));
         }
       },
-
       resetPlayer: () => set(state => ({
         player: { ...state.player, currentIndex: 0, currentRepeatCount: 0, status: 'idle', isWaitingSilence: false }
       })),
@@ -225,13 +221,14 @@ export const useStore = create<StoreState>()(
       storage: createJSONStorage(() => localStorage),
       migrate: (persistedState: any, version) => {
         if (version < 2) {
-           return {
-             ...persistedState,
-             player: {
-                ...persistedState.player,
-                ttsRate: 1.0
-             }
-           }
+            return {
+                ...persistedState,
+                player: {
+                    ...persistedState.player,
+                    ttsRate: 1.0,
+                    ttsProfileId: 'kore'
+                }
+            };
         }
         return persistedState as StoreState;
       },
